@@ -1,0 +1,6 @@
+apiVersion: v2
+name: letsencrypt-cert-issuer
+description: A Helm chart for let's Encrypt ClusterIssuers
+type: application
+version: 0.1.3
+appVersion: "1.0"
