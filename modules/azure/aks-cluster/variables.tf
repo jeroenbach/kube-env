@@ -14,6 +14,12 @@ variable "max_node_count" {
   type        = number
 }
 
+variable "max_pods_count" {
+  description = "The maximum number of pods on a node"
+  type        = number
+  default     = 30
+}
+
 variable "vm_size" {
   description = "The azure vm size."
   type        = string

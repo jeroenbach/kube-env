@@ -15,6 +15,12 @@ variable "max_node_count" {
   default     = 1
 }
 
+variable "max_pods_count" {
+  description = "The maximum number of pods on a node"
+  type        = number
+  default     = 40
+}
+
 variable "letsencrypt_email" {
   description = "The email address for Let's Encrypt notifications"
   type        = string

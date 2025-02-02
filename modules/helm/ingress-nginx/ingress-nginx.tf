@@ -21,7 +21,7 @@ resource "null_resource" "wait_for_ingress_nginx" {
   provisioner "local-exec" {
     command = <<EOT
       for i in {1..30}; do
-        kubectl get svc -n ingress-nginx ${helm_release.ingress_nginx.name}-controller && break || sleep 10;
+        kubectl get svc -n ingress-nginx ${helm_release.ingress_nginx.name}-controller && sleep 10 && break || sleep 10;
       done
     EOT
   }

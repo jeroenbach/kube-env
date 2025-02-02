@@ -19,6 +19,7 @@ resource "azurerm_kubernetes_cluster" "aks-cluster" {
     vm_size              = var.vm_size
     os_disk_size_gb      = var.vm_disk_size
     os_disk_type         = "Ephemeral" # Cheaper and faster than managed disks
+    max_pods             = var.max_pods_count
     upgrade_settings {
       drain_timeout_in_minutes      = 0
       max_surge                     = "10%"
