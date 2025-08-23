@@ -4,6 +4,9 @@
   "description": "Kubernetes environment configuration using terraform and helm",
   "scripts": {
     "scripts:init": "chmod +x scripts/*",
+    "grafana": "./scripts/grafana-open.sh",
+    "rancher": "./scripts/rancher`-open.sh",
+    "login": "az login",
     "kube:init": "terraform -chdir=environments/aks-mpn-westeu-prod init",
     "kube:apply": "./scripts/verify-kube-context.sh aks-mpn-westeu-prod && terraform -chdir=environments/aks-mpn-westeu-prod apply",
     "kube:connect": "az aks get-credentials --resource-group rg-aks-mpn-westeu-prod --name aks-mpn-westeu-prod",
