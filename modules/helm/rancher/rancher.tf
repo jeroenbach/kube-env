@@ -3,11 +3,13 @@ resource "helm_release" "rancher" {
   namespace        = "cattle-system"
   repository       = "https://releases.rancher.com/server-charts/stable"
   chart            = "rancher"
+  version          = "2.12.1"
   create_namespace = true
-
+  
   values = [
     <<EOF
 ${var.rancher_dns != null ? "hostname: ${var.rancher_dns}" : ""}
+replicas: 1
 ingress:
   enabled: ${var.rancher_dns == null ? false : true}
   tls:

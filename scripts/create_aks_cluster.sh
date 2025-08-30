@@ -9,7 +9,7 @@ LETSENCRYPTEMAIL=jeroen@bach.software
 
 #az login
 az group create --name $RESOURCEGROUP --location $LOCATION
-az aks create --resource-group $RESOURCEGROUP --name $CLUSTERNAME --node-vm-size $VMSIZE --node-count 1 --generate-ssh-keys --location $LOCATION --load-balancer-sku basic --node-osdisk-type Ephemeral --node-osdisk-size $VMDISKSIZE
+az aks create --resource-group $RESOURCEGROUP --name $CLUSTERNAME --node-vm-size $VMSIZE --node-count 1 --generate-ssh-keys --location $LOCATION --load-balancer-sku standard --node-osdisk-type Ephemeral --node-osdisk-size $VMDISKSIZE
 #--kubernetes-version 1.30.6
 az aks get-credentials --resource-group $RESOURCEGROUP --name $CLUSTERNAME
 
