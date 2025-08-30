@@ -5,8 +5,9 @@
 
 **Key Benefits:**
 - 🔒 **Automatic HTTPS** - Let's Encrypt certificates via cert-manager
-- 💰 **Cost Optimized** - ~$53/month for full Kubernetes infrastructure
+- 💰 **Cost Optimized** - ~$35/month with Cloudflare Tunnel (no LoadBalancer needed)
 - 🌐 **DNS Automated** - Cloudflare integration for domain management
+- 🔒 **Secure by Design** - No public IP addresses required with tunnel mode
 - 📦 **Modular Design** - Reusable Terraform modules for easy expansion
 
 ## Prerequisites
@@ -46,10 +47,6 @@ choco install azure-cli terraform kubernetes-cli
 ## 🚀 Quick Start Commands
 
 ```bash
-# Before any command, please make sure you're logged into azure
-# and select a subscription
-az login
-
 # Initialize and deploy cost-optimized production cluster
 pnpm run kube:init
 pnpm run kube:apply
@@ -62,6 +59,9 @@ pnpm run grafana    # Open Grafana dashboard
 pnpm run rancher    # Open Rancher management UI
 ```
 
+Terraform will ask you for the values of the needed variables. 
+You can create a `terraform.tfvars` file in the respective environment folders with your values. 
+This way, they're automatically provided.
 
 ## 🛠️ Tech Stack
 
@@ -77,34 +77,52 @@ pnpm run rancher    # Open Rancher management UI
 
 ```
 kube-env/
-├── environments/          # Environment-specific configurations
-│   ├── aks-mpn-westeu-prod/     # Cost-optimized production (~$53/month)
-│   ├── aks-vse-westeu-prod/     # Standard production environment  
-│   └── aks-vse-westeu-dev/      # Development environment
-├── apps/                  # Application deployments
-│   └── plausible/               # Plausible Analytics deployment
-├── modules/              # Reusable Terraform modules
-│   ├── azure/                  # Azure-specific modules (AKS, disks)
-│   └── helm/                   # Kubernetes app modules (nginx, cert-manager)
-├── helm-charts/          # Custom Helm charts
-│   └── letsencrypt-cert-issuer/ # SSL certificate configuration
-├── scripts/              # Utility scripts
-│   ├── grafana-open.sh         # Access monitoring dashboard
-│   ├── rancher-open.sh         # Access cluster management UI
-│   └── verify-kube-context.sh  # Validate Kubernetes connection
-└── package.json          # NPM scripts for easy deployment
+├── deployments/
+│   ├── environments/          # Environment-specific configurations
+│   │   ├── aks-mpn-westeu-prod/     # Cost-optimized production (~$35/month)
+│   │   ├── aks-vse-westeu-prod/     # Standard production environment  
+│   │   └── aks-vse-westeu-dev/      # Development environment
+│   └── apps/                  # Application deployments
+│       ├── plausible-dev/           # Plausible Analytics (development)
+│       └── plausible-prd/           # Plausible Analytics (production)
+├── modules/                   # Reusable Terraform modules
+│   ├── azure/                     # Azure-specific modules
+│   │   ├── aks-cluster/               # Complete AKS cluster with admin apps
+│   │   └── create-persistent-volume/  # Azure Managed Disk creation
+│   ├── cloudflare/                # Cloudflare integration modules  
+│   │   ├── dns-record/                # DNS record management
+│   │   └── tunnel/                    # Cloudflare Tunnel infrastructure
+│   └── helm/                      # Kubernetes application modules
+│       ├── cert-manager/              # SSL certificate management
+│       ├── cloudflared/               # Cloudflare Tunnel client
+│       ├── grafana/                   # Monitoring dashboard
+│       ├── ingress-nginx/             # Traffic routing and load balancing
+│       ├── letsencrypt-cert-issuer/   # Let's Encrypt certificate issuers
+│       ├── plausible/                 # Privacy-focused analytics
+│       └── rancher/                   # Kubernetes management UI
+├── helm-charts/               # Custom Helm charts
+│   └── letsencrypt-cert-issuer/       # SSL certificate configuration
+├── scripts/                   # Utility scripts
+│   ├── grafana-open.sh                # Access monitoring dashboard
+│   ├── rancher-open.sh                # Access cluster management UI
+│   └── verify-kube-context.sh         # Validate Kubernetes connection
+├── CLAUDE.md                  # Instructions for Claude Code AI
+├── package.json               # NPM scripts for easy deployment
+└── pnpm-lock.yaml            # Package manager lock file
 ```
 
 ## 🔄 How It Works
 
+### Cloudflare Tunnel Mode (Cost-Optimized)
 ```mermaid
 graph TB
-    subgraph "Your Domain (via Cloudflare)"
+    subgraph "Cloudflare Network"
         DNS[DNS Records]
+        TUNNEL[Cloudflare Tunnel]
     end
     
     subgraph "Azure AKS Cluster"
-        LB[Standard Load Balancer]
+        CLOUDFLARED[Cloudflared Client]
         NGINX[NGINX Ingress Controller]
         CERT[Cert Manager]
         APP[Your Apps]
@@ -115,20 +133,47 @@ graph TB
     end
     
     USER[Users] --> DNS
-    DNS --> LB
-    LB --> NGINX
+    DNS --> TUNNEL
+    TUNNEL -.->|Secure Connection<br/>No Public IPs| CLOUDFLARED
+    CLOUDFLARED --> NGINX
     NGINX --> APP
     CERT --> LE
     CERT -.->|Provides SSL Certs| NGINX
 ```
 
+### Traditional LoadBalancer Mode
+```mermaid
+graph TB
+    subgraph "Cloudflare Network"
+        DNS2[DNS Records]
+    end
+    
+    subgraph "Azure AKS Cluster"
+        LB[Standard Load Balancer]
+        NGINX2[NGINX Ingress Controller]
+        CERT2[Cert Manager]
+        APP2[Your Apps]
+    end
+    
+    subgraph "External Services"
+        LE2[Let's Encrypt CA]
+    end
+    
+    USER2[Users] --> DNS2
+    DNS2 -.->|Public IPs| LB
+    LB --> NGINX2
+    NGINX2 --> APP2
+    CERT2 --> LE2
+    CERT2 -.->|Provides SSL Certs| NGINX2
+```
+
 ## 🌍 Environments
 
-| Environment | Subscription | Purpose | Monthly Cost |
-|-------------|--------------|---------|--------------|
-| **aks-mpn-westeu-prod** | Microsoft Partner Network | Cost-optimized production | ~$53 |
-| **aks-vse-westeu-prod** | Visual Studio Enterprise | Standard production | ~$70-95 |
-| **aks-vse-westeu-dev** | Visual Studio Enterprise | Development/testing | Variable |
+| Environment | Subscription | Purpose | LoadBalancer Mode | Tunnel Mode |
+|-------------|--------------|---------|-------------------|-------------|
+| **aks-mpn-westeu-prod** | Microsoft Partner Network | Cost-optimized production | ~$53/month | ~$35/month |
+| **aks-vse-westeu-prod** | Visual Studio Enterprise | Standard production | ~$70-95/month | ~$52-77/month |
+| **aks-vse-westeu-dev** | Visual Studio Enterprise | Development/testing | Variable | Variable (lower) |
 
 
 ### Azure Resource Naming Conventions
@@ -143,9 +188,16 @@ I follow this naming convention for my Azure resources:
 ## 🔌 External APIs & Services
 
 ### Cloudflare API
-- **Purpose:** Automated DNS record creation and domain validation
-- **Integration:** Creates DNS records when load balancer IPs are assigned
+- **Purpose:** Automated DNS record creation, domain validation and tunnel creation
+- **Integration:** Creates DNS records when load balancer IPs are assigned or tunnel is configured
 - **Authentication:** API Token (stored as environment variable)
+
+Make sure the token has the following permissions:
+| Type   | Item                       | Permission |
+|--------|----------------------------|------------|
+| Account| Cloudflare Tunnel          | Edit       |
+| Account| Access: Apps and Policies  | Edit       |
+| Zone   | DNS                        | Edit       |
 
 ### Let's Encrypt
 - **Purpose:** Free SSL/TLS certificates with automatic renewal
@@ -163,38 +215,14 @@ To automatically generate certificates for my ingress controllers, I use the set
 ## 💡 Key Features
 
 ### Cost Optimization
-- **Burstable VMs** - Standard_B2s instances that scale with demand (~$35/month)
+- **Burstable VMs** - Standard_B2s instances that scale with demand
 - **Ephemeral OS Disks** - No extra storage costs for system disks
-- **Standard Load Balancer** - Required for AKS, single rule setup (~$18/month)  
+- **Networking Options** - Choose between cost modes:
+  - **Tunnel Mode**: ~$35/month (no LoadBalancer costs, uses Cloudflare Tunnel)
+  - **LoadBalancer Mode**: ~$53/month (includes Standard LoadBalancer ~$18/month)
 - **Managed Disks** - Separate persistent storage only where needed
 
 The `aks-mpn-westeu-prod` configuration is optimized for cost efficiency. Here are a few considerations:
 
 - **OS Disk Size (30GB)**: The node uses around 23GB of disk space for system data, leaving approximately 7GB for containers. While this is limited, the low-memory machines used cannot handle many containers anyway. Separate managed disks are created for container data, so it is not stored on the OS disk. Keep this in mind when using large or numerous container images.
 - **OS Disk Type (Ephemeral)**: The 30GB limit corresponds to the maximum size of an ephemeral disk included in the VM price. For larger storage needs, you must switch to a "Managed" disk, which will mean additional Azure costs.
-
-### Security & Automation
-- **Managed Identities** - No stored credentials in code
-- **Automatic SSL** - Let's Encrypt certificates with auto-renewal
-- **Network Isolation** - Kubernetes namespaces and Azure network security
-- **State Management** - Terraform state stored in Azure with locking
-
-### Developer Experience
-- **NPM Scripts** - Simple commands for complex operations
-- **Modular Design** - Reusable components for easy expansion
-- **Clear Documentation** - Architecture decisions and rationale documented
-- **Helper Scripts** - Quick access to monitoring and management tools
-
-## 📊 Applications Included
-
-### Plausible Analytics
-- **Purpose:** Privacy-focused web analytics
-- **Storage:** PostgreSQL (1GB) + ClickHouse (8GB)
-- **Access:** Automatic HTTPS with your domain
-- **Backup:** Persistent volumes with Azure Managed Disks
-
-### Management Tools
-- **Rancher:** Web-based Kubernetes management interface
-- **Grafana:** Infrastructure monitoring and alerting
-- **cert-manager:** Automatic SSL certificate management
-- **NGINX Ingress:** HTTP/HTTPS traffic routing and load balancing

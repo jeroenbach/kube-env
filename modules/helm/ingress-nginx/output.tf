@@ -1,3 +1,3 @@
 output "external_ip" {
-  value = data.kubernetes_service.ingress_nginx.status.0.load_balancer.0.ingress.0.ip
+  value = data.external.ingress_external_ip.result.ip != "" ? data.external.ingress_external_ip.result.ip : null
 }
