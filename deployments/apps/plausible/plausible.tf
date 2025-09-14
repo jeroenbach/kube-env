@@ -12,7 +12,7 @@ data "terraform_remote_state" "aks_cluster" {
     resource_group_name  = "rg-provisioning-mpn"
     storage_account_name = "stprovisioningmpn"
     container_name       = "tfstate"
-    key                  = "aks-mpn-westeu-prod-v2.tfstate"
+    key                  = "aks-mpn-westeu-prod.tfstate"
   }
 }
 
@@ -21,7 +21,7 @@ module "plausible" {
 
   # Azure Configuration (from remote state)
   azure_subscription_id          = var.azure_subscription_id
-  azure_disk_resource_group_name = "rg-nodes-aks-mpn-westeu-prod-v2"
+  azure_disk_resource_group_name = "rg-nodes-aks-mpn-westeu-prod"
   azure_disk_location            = data.terraform_remote_state.aks_cluster.outputs.azure_region
 
   # AKS Configuration
@@ -43,7 +43,7 @@ module "plausible" {
 
   # Database Restore Configuration (optional)
   postgresql_restore_snapshot_id = "/subscriptions/3243bcdf-6e19-43a5-9b59-ab769838ff01/resourceGroups/Shared/providers/Microsoft.Compute/snapshots/plausible-postgresql"
-  clickhouse_restore_snapshot_id = "/subscriptions/3243bcdf-6e19-43a5-9b59-ab769838ff01/resourceGroups/Shared/providers/Microsoft.Compute/snapshots/plausible-clickhouse"
+  clickhouse_restore_snapshot_id = "/subscriptions/3243bcdf-6e19-43a5-9b59-ab769838ff01/resourceGroups/Shared/providers/Microsoft.Compute/snapshots/plausible-clickhousev3"
 }
 
 # =============================================================================

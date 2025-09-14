@@ -30,8 +30,8 @@ module "aks_cluster" {
   tunnel_enabled        = false
 
   # Admin Applications
-  rancher_enabled = false
-  # rancher_dns     = "rancher.bach.software"
+  rancher_enabled = true
+  rancher_dns     = "rancher-dev.bach.software"
   grafana_enabled = false
 
   # Cloudflare DNS Configuration (in case the rancher_dns is set)

@@ -5,6 +5,8 @@ resource "helm_release" "rancher" {
   chart            = "rancher"
   version          = "2.12.1"
   create_namespace = true
+  cleanup_on_fail  = true
+  force_update     = true
   
   values = [
     <<EOF
@@ -21,4 +23,22 @@ letsEncrypt:
     class: nginx
 EOF
   ]
+}
+
+# Cleanup resource to handle stuck namespace during destroy
+resource "null_resource" "rancher_cleanup" {
+  triggers = {
+    rancher_release = helm_release.rancher.name
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<-EOT
+      kubectl patch namespace cattle-system -p '{"metadata":{"finalizers":[]}}' --type=merge || true
+      kubectl delete namespace cattle-system --force --grace-period=0 || true
+    EOT
+    on_failure = continue
+  }
+
+  depends_on = [helm_release.rancher]
 }

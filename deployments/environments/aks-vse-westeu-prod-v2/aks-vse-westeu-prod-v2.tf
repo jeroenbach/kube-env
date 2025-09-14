@@ -24,6 +24,7 @@ module "aks_cluster" {
   cluster_vm_min_node_count = 2
   cluster_vm_max_node_count = 2
   cluster_vm_max_pods_count = 40
+  # cluster_worker_node_count = 1
 
   # Networking Configuration
   load_balancer_enabled = true

@@ -1,6 +1,6 @@
-# Plausible Analytics Helm Module
+# Plausible Analytics Solution
 
-This Terraform module deploys Plausible Analytics, a privacy-focused web analytics platform, using Helm on Kubernetes. It includes persistent storage for PostgreSQL and ClickHouse databases, automatic SSL certificate provisioning, and ingress configuration.
+This Terraform solution deploys Plausible Analytics, a privacy-focused web analytics platform, using Helm on Kubernetes. It includes persistent storage for PostgreSQL and ClickHouse databases, automatic SSL certificate provisioning, and ingress configuration.
 
 ## Features
 
@@ -26,7 +26,7 @@ Plausible Analytics consists of:
 
 ```hcl
 module "plausible" {
-  source = "../../../modules/helm/plausible"
+  source = "../../solutions/plausible"
   
   subscription_id                = var.azure_subscription_id
   azure_disk_resource_group_name = data.terraform_remote_state.aks_cluster.outputs.azure_resource_group_name
@@ -38,7 +38,7 @@ module "plausible" {
 
 ```hcl
 module "plausible" {
-  source = "../../../modules/helm/plausible"
+  source = "../../solutions/plausible"
   
   subscription_id                    = var.azure_subscription_id
   azure_disk_resource_group_name     = data.terraform_remote_state.aks_cluster.outputs.azure_resource_group_name
@@ -216,7 +216,7 @@ kubectl get pv,pvc -n plausible-analytics
 
 ## Related Modules
 
-- `azure/create-persistent-volume`: Creates the managed disks for database storage
-- `helm/cert-manager`: Required for SSL certificate management
-- `helm/ingress-nginx`: Required for ingress traffic routing
-- `cloudflare/dns-record`: Optional for DNS record management
+- `modules/azure/create-persistent-volume`: Creates the managed disks for database storage
+- `modules/helm/cert-manager`: Required for SSL certificate management
+- `modules/helm/ingress-nginx`: Required for ingress traffic routing
+- `modules/cloudflare/dns-record`: Optional for DNS record management

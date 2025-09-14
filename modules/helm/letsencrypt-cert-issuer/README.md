@@ -35,15 +35,15 @@ This Terraform module deploys Let's Encrypt ClusterIssuers using a custom Helm c
 
 ## Related Modules
 
-- `cert-manager`: **Required dependency** - the core certificate management engine
-- `ingress-nginx`: Required for HTTP-01 challenge validation
+- `modules/helm/cert-manager`: **Required dependency** - the core certificate management engine
+- `modules/helm/ingress-nginx`: Required for HTTP-01 challenge validation
 ## Usage
 
 ### Basic Usage
 
 ```hcl
 module "letsencrypt_issuer" {
-  source = "../../../modules/helm/letsencrypt-cert-issuer"
+  source = "../../modules/helm/letsencrypt-cert-issuer"
   
   letsencrypt_email = "admin@example.com"
 }

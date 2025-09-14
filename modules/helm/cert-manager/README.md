@@ -33,15 +33,15 @@ Cert-manager can work with multiple certificate authorities simultaneously - you
 
 ## Related Modules
 
-- `letsencrypt-cert-issuer`: Creates Let's Encrypt cluster issuers for cert-manager to use
-- `ingress-nginx`: NGINX ingress controller for HTTP-01 challenges
+- `modules/helm/letsencrypt-cert-issuer`: Creates Let's Encrypt cluster issuers for cert-manager to use
+- `modules/helm/ingress-nginx`: NGINX ingress controller for HTTP-01 challenges
 ## Usage
 
 ### Basic Usage
 
 ```hcl
 module "cert_manager" {
-  source = "../../../modules/helm/cert-manager"
+  source = "../../modules/helm/cert-manager"
 }
 ```
 
@@ -61,14 +61,14 @@ The module deploys cert-manager with the following configuration:
 ```hcl
 # Deploy cert-manager
 module "cert_manager" {
-  source = "../../../modules/helm/cert-manager"
+  source = "../../modules/helm/cert-manager"
   
   depends_on = [azurerm_kubernetes_cluster.aks_cluster]
 }
 
 # Deploy Let's Encrypt issuer
 module "letsencrypt_issuer" {
-  source = "../../../modules/helm/letsencrypt-cert-issuer"
+  source = "../../modules/helm/letsencrypt-cert-issuer"
   
   letsencrypt_email = "admin@example.com"
   

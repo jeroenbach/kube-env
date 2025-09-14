@@ -28,7 +28,7 @@ The tunnel client (`cloudflared`) running in your cluster connects to this infra
 
 ```hcl
 module "cloudflare_tunnel" {
-  source = "../../../modules/cloudflare/tunnel"
+  source = "../../modules/cloudflare/tunnel"
   
   account_id      = var.cloudflare_account_id
   tunnel_name     = "${var.cluster_name}-tunnel"
@@ -111,6 +111,6 @@ module "cloudflare_tunnel" {
 
 ## Related Modules
 
-- `helm/cloudflared`: Deploys tunnel client in Kubernetes cluster
-- `cloudflare/dns-record`: Creates DNS records pointing to tunnel
-- `helm/ingress-nginx`: Target ingress controller for tunnel traffic
+- `modules/helm/cloudflared`: Deploys tunnel client in Kubernetes cluster
+- `modules/cloudflare/dns-record`: Creates DNS records pointing to tunnel
+- `modules/helm/ingress-nginx`: Target ingress controller for tunnel traffic

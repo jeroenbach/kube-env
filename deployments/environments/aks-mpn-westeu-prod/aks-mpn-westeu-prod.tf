@@ -3,7 +3,7 @@ terraform {
     resource_group_name  = "rg-provisioning-mpn"
     storage_account_name = "stprovisioningmpn"
     container_name       = "tfstate"
-    key                  = "aks-mpn-westeu-prod-v2.tfstate"
+    key                  = "aks-mpn-westeu-prod.tfstate"
   }
 }
 
@@ -18,21 +18,21 @@ module "aks_cluster" {
   letsencrypt_email = var.letsencrypt_email
 
   # Cluster Configuration
-  cluster_name              = "aks-mpn-westeu-prod-v2"
+  cluster_name              = "aks-mpn-westeu-prod"
   cluster_vm_size           = "Standard_B2s" # Low memory (4GB) Burst VM (2CPU)
   cluster_vm_disk_size      = 30             # Max size of it's Ephemeral disk
   cluster_vm_min_node_count = 1
   cluster_vm_max_node_count = 1
   cluster_vm_max_pods_count = 40
-  # cluster_worker_node_count = 1
+  cluster_worker_node_count = 0
 
   # Networking Configuration
   load_balancer_enabled = true
   tunnel_enabled        = false
 
   # Admin Applications
-  rancher_enabled = true
-  rancher_dns     = null
+  rancher_enabled = false
+  rancher_dns     = "rancher.bach.software"
   grafana_enabled = false
 
   # Cloudflare DNS Configuration (in case the rancher_dns is set)

@@ -16,7 +16,7 @@ This Terraform module creates an Azure Managed Disk and associated Kubernetes Pe
 
 ```hcl
 module "app_storage" {
-  source = "../../../modules/azure/create-persistent-volume"
+  source = "../../modules/azure/create-persistent-volume"
   
   # Azure Configuration
   azure_resource_group_name = "rg-my-cluster"
@@ -36,7 +36,7 @@ module "app_storage" {
 
 ```hcl
 module "restored_storage" {
-  source = "../../../modules/azure/create-persistent-volume"
+  source = "../../modules/azure/create-persistent-volume"
   
   # Azure Configuration
   azure_resource_group_name = "rg-my-cluster"

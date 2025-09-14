@@ -10,7 +10,7 @@ resource "azurerm_managed_disk" "create" {
   lifecycle {
     # This prevents Terraform from deleting the disk when the resource is destroyed
     # only disable this temporary if you know what you're doing
-    prevent_destroy = true
+    # prevent_destroy = true
   }
 }
 

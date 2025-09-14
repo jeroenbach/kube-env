@@ -26,7 +26,7 @@ Cloudflare Tunnel creates a secure, outbound-only connection from your cluster t
 
 ```hcl
 module "cloudflared" {
-  source = "../../../modules/helm/cloudflared"
+  source = "../../modules/helm/cloudflared"
 
   account_id         = "your-cloudflare-account-id"
   tunnel_id          = "your-tunnel-id"
@@ -40,7 +40,7 @@ module "cloudflared" {
 
 ```hcl
 module "cloudflared" {
-  source = "../../../modules/helm/cloudflared"
+  source = "../../modules/helm/cloudflared"
 
   account_id         = var.cloudflare_account_id
   tunnel_id          = module.cloudflare_tunnel.tunnel_id
@@ -165,6 +165,6 @@ kubectl logs -n cloudflared deployment/cloudflared-cloudflare-tunnel
 
 ## Related Modules
 
-- `cloudflare/tunnel`: Creates the tunnel infrastructure in Cloudflare
-- `ingress-nginx`: NGINX ingress controller (target for tunnel traffic)
-- `cloudflare/dns-record`: DNS records pointing to tunnel CNAME
+- `modules/cloudflare/tunnel`: Creates the tunnel infrastructure in Cloudflare
+- `modules/helm/ingress-nginx`: NGINX ingress controller (target for tunnel traffic)
+- `modules/cloudflare/dns-record`: DNS records pointing to tunnel CNAME

@@ -17,7 +17,7 @@ This Terraform module deploys the NGINX Ingress Controller using Helm to provide
 
 ```hcl
 module "ingress_nginx" {
-  source = "../../../modules/helm/ingress-nginx"
+  source = "../../modules/helm/ingress-nginx"
   
   service_type = "LoadBalancer"
 }
@@ -27,21 +27,12 @@ module "ingress_nginx" {
 
 ```hcl
 module "ingress_nginx" {
-  source = "../../../modules/helm/ingress-nginx"
+  source = "../../modules/helm/ingress-nginx"
   
   service_type = "ClusterIP"
 }
 ```
 
-### Usage with NodePort
-
-```hcl
-module "ingress_nginx" {
-  source = "../../../modules/helm/ingress-nginx"
-  
-  service_type = "NodePort"
-}
-```
 
 ## Variables
 
@@ -53,7 +44,6 @@ module "ingress_nginx" {
 
 - **LoadBalancer**: Exposes the ingress controller via Azure Load Balancer with external IP
 - **ClusterIP**: Internal cluster access only (suitable for Cloudflare Tunnel setups)
-- **NodePort**: Exposes on each node's IP at a static port
 
 ## Outputs
 

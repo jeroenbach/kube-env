@@ -5,10 +5,12 @@
 
 **Key Benefits:**
 - 🔒 **Automatic HTTPS** - Let's Encrypt certificates via cert-manager
-- 💰 **Cost Optimized** - ~$35/month with Cloudflare Tunnel (no LoadBalancer needed)
+- 💰 **Cost Optimized** - ~$53/month with LoadBalancer mode vs ~$68/month with Cloudflare Tunnel (NAT Gateway required)
 - 🌐 **DNS Automated** - Cloudflare integration for domain management
 - 🔒 **Secure by Design** - No public IP addresses required with tunnel mode
 - 📦 **Modular Design** - Reusable Terraform modules for easy expansion
+
+> **Update (Aug 2025):** Azure has retired the _Basic Load Balancer_ SKU. This changed the costs from running this cluster for $35 to minimum $53 per month. 
 
 ## Prerequisites
 Ensure the following tools are installed on your machine:
@@ -79,15 +81,15 @@ This way, they're automatically provided.
 kube-env/
 ├── deployments/
 │   ├── environments/          # Environment-specific configurations
-│   │   ├── aks-mpn-westeu-prod/     # Cost-optimized production (~$35/month)
-│   │   ├── aks-vse-westeu-prod/     # Standard production environment  
-│   │   └── aks-vse-westeu-dev/      # Development environment
+│   │   ├── aks-mpn-westeu-prod/     # Cost-optimized production (~$53/month)
+│   │   ├── aks-payg-westeu-dev/     # Pay-as-you-go development environment
+│   │   ├── aks-vse-westeu-dev/      # Visual Studio Enterprise development
+│   │   └── aks-vse-westeu-prod-v2/     # Visual Studio Enterprise production
 │   └── apps/                  # Application deployments
-│       ├── plausible-dev/           # Plausible Analytics (development)
-│       └── plausible-prd/           # Plausible Analytics (production)
+│       ├── plausible/               # Plausible Analytics (v2)
+│       └── plausiblev3/             # Plausible Analytics (latest version)
 ├── modules/                   # Reusable Terraform modules
 │   ├── azure/                     # Azure-specific modules
-│   │   ├── aks-cluster/               # Complete AKS cluster with admin apps
 │   │   └── create-persistent-volume/  # Azure Managed Disk creation
 │   ├── cloudflare/                # Cloudflare integration modules  
 │   │   ├── dns-record/                # DNS record management
@@ -98,48 +100,22 @@ kube-env/
 │       ├── grafana/                   # Monitoring dashboard
 │       ├── ingress-nginx/             # Traffic routing and load balancing
 │       ├── letsencrypt-cert-issuer/   # Let's Encrypt certificate issuers
-│       ├── plausible/                 # Privacy-focused analytics
 │       └── rancher/                   # Kubernetes management UI
+├── solutions/                 # Complete solution deployments
+│   ├── aks-cluster/                 # Complete AKS cluster with admin apps
+│   └── plausible/                   # Plausible Analytics solution
 ├── helm-charts/               # Custom Helm charts
 │   └── letsencrypt-cert-issuer/       # SSL certificate configuration
 ├── scripts/                   # Utility scripts
+│   ├── create_aks_cluster.sh          # Create AKS cluster script
 │   ├── grafana-open.sh                # Access monitoring dashboard
 │   ├── rancher-open.sh                # Access cluster management UI
 │   └── verify-kube-context.sh         # Validate Kubernetes connection
-├── CLAUDE.md                  # Instructions for Claude Code AI
 ├── package.json               # NPM scripts for easy deployment
 └── pnpm-lock.yaml            # Package manager lock file
 ```
 
 ## 🔄 How It Works
-
-### Cloudflare Tunnel Mode (Cost-Optimized)
-```mermaid
-graph TB
-    subgraph "Cloudflare Network"
-        DNS[DNS Records]
-        TUNNEL[Cloudflare Tunnel]
-    end
-    
-    subgraph "Azure AKS Cluster"
-        CLOUDFLARED[Cloudflared Client]
-        NGINX[NGINX Ingress Controller]
-        CERT[Cert Manager]
-        APP[Your Apps]
-    end
-    
-    subgraph "External Services"
-        LE[Let's Encrypt CA]
-    end
-    
-    USER[Users] --> DNS
-    DNS --> TUNNEL
-    TUNNEL -.->|Secure Connection<br/>No Public IPs| CLOUDFLARED
-    CLOUDFLARED --> NGINX
-    NGINX --> APP
-    CERT --> LE
-    CERT -.->|Provides SSL Certs| NGINX
-```
 
 ### Traditional LoadBalancer Mode
 ```mermaid
@@ -167,13 +143,49 @@ graph TB
     CERT2 -.->|Provides SSL Certs| NGINX2
 ```
 
+### Cloudflare Tunnel Mode
+```mermaid
+graph TB
+    subgraph "Cloudflare Network"
+        DNS[DNS Records]
+        TUNNEL[Cloudflare Tunnel]
+    end
+    
+    subgraph "Azure AKS Cluster"
+        CLOUDFLARED[Cloudflared Client]
+        NGINX[NGINX Ingress Controller]
+        CERT[Cert Manager]
+        APP[Your Apps]
+    end
+    
+    subgraph "External Services"
+        LE[Let's Encrypt CA]
+    end
+    
+    USER[Users] --> DNS
+    DNS --> TUNNEL
+    TUNNEL -.->|Secure Connection<br/>No Public IPs| CLOUDFLARED
+    CLOUDFLARED --> NGINX
+    NGINX --> APP
+    CERT --> LE
+    CERT -.->|Provides SSL Certs| NGINX
+```
+
+
 ## 🌍 Environments
 
-| Environment | Subscription | Purpose | LoadBalancer Mode | Tunnel Mode |
-|-------------|--------------|---------|-------------------|-------------|
-| **aks-mpn-westeu-prod** | Microsoft Partner Network | Cost-optimized production | ~$53/month | ~$35/month |
-| **aks-vse-westeu-prod** | Visual Studio Enterprise | Standard production | ~$70-95/month | ~$52-77/month |
-| **aks-vse-westeu-dev** | Visual Studio Enterprise | Development/testing | Variable | Variable (lower) |
+| Environment | Subscription | Purpose | Base Cost | + LoadBalancer | + NAT Gateway |
+|-------------|--------------|---------|-----------|----------------|---------------|
+| **aks-mpn-westeu-prod** | Microsoft Partner Network | Cost-optimized production | $35/month | $53/month¹ | $68/month² |
+| **aks-vse-westeu-prod-v2** | Visual Studio Enterprise | Standard production | ~$80-105/month | ~$98-123/month¹ | ~$113-138/month² |
+| **aks-vse-westeu-dev** | Visual Studio Enterprise | Development/testing | Variable | Variable¹ | Variable² |
+| **aks-payg-westeu-dev** | Pay-as-you-go | Development/testing | Variable | Variable¹ | Variable² |
+
+**¹ LoadBalancer Mode**: Base + Azure Load Balancer (~$18/month) for inbound traffic and outbound connectivity  
+**² NAT Gateway Mode**: Base + NAT Gateway (~$33/month) for outbound connectivity - **required for Cloudflare Tunnel**  
+
+**Important**: Both modes require mandatory Azure networking infrastructure. 
+Tunnel mode saves ~$18/month by avoiding the LoadBalancer, but still requires NAT Gateway for cluster outbound connectivity (which is more expensive then the loadbalancer, adding ~$33 a month).
 
 
 ### Azure Resource Naming Conventions
@@ -218,9 +230,14 @@ To automatically generate certificates for my ingress controllers, I use the set
 - **Burstable VMs** - Standard_B2s instances that scale with demand
 - **Ephemeral OS Disks** - No extra storage costs for system disks
 - **Networking Options** - Choose between cost modes:
-  - **Tunnel Mode**: ~$35/month (no LoadBalancer costs, uses Cloudflare Tunnel)
-  - **LoadBalancer Mode**: ~$53/month (includes Standard LoadBalancer ~$18/month)
+  - **LoadBalancer Mode**: $53/month (Base $35 + LoadBalancer $18/month for inbound + outbound)  
+  - **NAT Gateway Mode**: $68/month (Base $35 + NAT Gateway $33/month for outbound connectivity)
 - **Managed Disks** - Separate persistent storage only where needed
+
+**Critical Reality Check**: Both modes require mandatory Azure networking infrastructure that cannot be avoided:
+- **LoadBalancer Mode**: Uses LoadBalancer for both inbound and outbound connectivity
+- **NAT Gateway Mode**: Must use NAT Gateway for cluster outbound connectivity (required for Cloudflare Tunnel)
+- **No "free" option exists** - Azure AKS requires outbound internet access for cluster operations
 
 The `aks-mpn-westeu-prod` configuration is optimized for cost efficiency. Here are a few considerations:
 

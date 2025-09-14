@@ -1,6 +1,6 @@
-# Azure AKS Cluster Module
+# Azure AKS Cluster Solution
 
-This Terraform module creates a comprehensive Azure Kubernetes Service (AKS) cluster with integrated networking, security, and administrative tools. It supports both traditional LoadBalancer and modern Cloudflare Tunnel connectivity patterns, with automatic SSL certificate management and admin application deployment.
+This Terraform solution creates an Azure Kubernetes Service (AKS) cluster with integrated networking, security, and administrative tools. It supports both traditional LoadBalancer and modern Cloudflare Tunnel connectivity patterns, with automatic SSL certificate management and admin application deployment.
 
 ## Features
 
@@ -38,7 +38,7 @@ The module creates a complete Kubernetes environment with:
 
 ```hcl
 module "aks_cluster" {
-  source = "../../../modules/azure/aks-cluster"
+  source = "../../solutions/aks-cluster"
   
   # Azure Configuration
   azure_subscription_id = var.azure_subscription_id
@@ -73,7 +73,7 @@ module "aks_cluster" {
 
 ```hcl
 module "aks_cluster" {
-  source = "../../../modules/azure/aks-cluster"
+  source = "../../solutions/aks-cluster"
   
   # Azure Configuration
   azure_subscription_id = var.azure_subscription_id
@@ -103,7 +103,7 @@ module "aks_cluster" {
 
 ```hcl
 module "aks_cluster" {
-  source = "../../../modules/azure/aks-cluster"
+  source = "../../solutions/aks-cluster"
   
   # Azure Configuration
   azure_subscription_id = var.azure_subscription_id
@@ -283,11 +283,11 @@ open http://localhost:3000
 
 ## Related Modules
 
-- `helm/cert-manager`: SSL certificate management
-- `helm/ingress-nginx`: Traffic routing and load balancing
-- `helm/letsencrypt-cert-issuer`: Let's Encrypt certificate issuers
-- `helm/rancher`: Kubernetes management interface
-- `helm/grafana`: Monitoring and observability
-- `cloudflare/tunnel`: Tunnel infrastructure creation
-- `helm/cloudflared`: Tunnel client deployment
-- `cloudflare/dns-record`: DNS record management
+- `modules/helm/cert-manager`: SSL certificate management
+- `modules/helm/ingress-nginx`: Traffic routing and load balancing
+- `modules/helm/letsencrypt-cert-issuer`: Let's Encrypt certificate issuers
+- `modules/helm/rancher`: Kubernetes management interface
+- `modules/helm/grafana`: Monitoring and observability
+- `modules/cloudflare/tunnel`: Tunnel infrastructure creation
+- `modules/helm/cloudflared`: Tunnel client deployment
+- `modules/cloudflare/dns-record`: DNS record management
