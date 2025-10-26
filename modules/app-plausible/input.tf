@@ -50,6 +50,20 @@ variable "plausible_config_disk_size" {
   default     = 1
 }
 
+variable "google_client_id" {
+  description = "Google OAuth Client ID for Plausible authentication. Leave empty to disable Google OAuth."
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
+variable "google_client_secret" {
+  description = "Google OAuth Client Secret for Plausible authentication. Leave empty to disable Google OAuth."
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
 # =============================================================================
 # DATABASE RESTORE CONFIGURATION
 # =============================================================================

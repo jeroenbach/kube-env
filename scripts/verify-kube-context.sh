@@ -21,5 +21,5 @@ else
   echo "The current context was '$current_context'. It has been unset to prevent working in the wrong cluster."
   echo "Please run 'az login' and then the pnpm connect script to make sure you're connected to the correct environment."
   az login
-  az aks get-credentials --resource-group rg-$context_name --name $context_name
+  az aks get-credentials --resource-group rg-$context_name --name $context_name || true # continue on error
 fi

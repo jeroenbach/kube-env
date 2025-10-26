@@ -24,11 +24,19 @@ resource "helm_release" "plausible" {
   # so we have to override it here
   values = [
     <<EOF
-baseURL: "http://${var.plausible_dns}"
+baseURL: "https://${var.plausible_dns}"
 
 # Override the database URLs to use the correct service names
 databaseURL: "postgres://postgres:postgres@${var.name}-postgresql:5432/plausible_db"
 clickhouseDatabaseURL: "http://clickhouse:password@${var.name}-clickhouse:8123/plausible_events_db"
+
+%{if var.google_client_id != null && var.google_client_secret != null~}
+# Google OAuth Configuration
+google:
+  enabled: true
+  clientID: "${var.google_client_id}"
+  clientSecret: "${var.google_client_secret}"
+%{endif~}
 
 postgresql:
   primary:

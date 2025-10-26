@@ -13,6 +13,10 @@ module "plausible" {
   # Plausible Configuration
   plausible_dns = var.plausible_dns
 
+  # Google OAuth Configuration (optional)
+  google_client_id     = var.google_client_id
+  google_client_secret = var.google_client_secret
+
   # Database Restore Configuration (optional)
   postgresql_restore_snapshot_id = var.postgresql_restore_snapshot_id
   clickhouse_restore_snapshot_id = var.clickhouse_restore_snapshot_id
@@ -54,4 +58,18 @@ variable "postgresql_restore_snapshot_id" {
 variable "clickhouse_restore_snapshot_id" {
   description = "The Azure snapshot ID to restore ClickHouse data from. Format: /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Compute/snapshots/<snapshot-name>. Leave empty to start with a fresh database."
   type        = string
+}
+
+variable "google_client_id" {
+  description = "Google OAuth Client ID for Plausible authentication. Leave empty to disable Google OAuth."
+  type        = string
+  default     = null
+  sensitive   = true
+}
+
+variable "google_client_secret" {
+  description = "Google OAuth Client Secret for Plausible authentication. Leave empty to disable Google OAuth."
+  type        = string
+  default     = null
+  sensitive   = true
 }
