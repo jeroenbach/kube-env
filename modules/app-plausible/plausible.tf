@@ -55,11 +55,18 @@ clickhouse:
     size: ${var.plausible_data_disk_size}Gi # This database is used for storing all the analytics data, so it needs to be larger
   resources:
     requests:
-      memory: 400Mi
+      memory: 1000Mi  # Increased to match actual usage
+    limits:
+      # When Kubernetes sets a memory limit (1229Mi in our case), the container sees that limit as its total available memory through cgroups
+      # ClickHouse reads this cgroup limit and calculates 75% of 1229Mi (≈922Mi), not 75% of the node's total memory
+      # If you didn't set a limit, the container would see the entire node's memory (4GB), and ClickHouse would try to use 75% of that (3GB), which could cause issues with other pods
+      memory: 1229Mi  # 1.2Gi max to stay within node capacity
 
 resources:
   requests:
-    memory: 350Mi
+    memory: 400Mi  # Increased for main Plausible app
+  limits:
+    memory: 600Mi
 
 ingress:
   enabled: true
