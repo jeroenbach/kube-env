@@ -61,6 +61,32 @@ clickhouse:
       # ClickHouse reads this cgroup limit and calculates 75% of 1229Mi (≈922Mi), not 75% of the node's total memory
       # If you didn't set a limit, the container would see the entire node's memory (4GB), and ClickHouse would try to use 75% of that (3GB), which could cause issues with other pods
       memory: 1229Mi  # 1.2Gi max to stay within node capacity
+  # Disable heavy system logs to prevent disk space issues (7.5GB was consumed by these logs)
+  # Uses extraOverrides for inline XML configuration (Clickhouse chart 7.2.0)
+  # Ref: Bundled chart at charts/clickhouse/values.yaml line 425
+  logLevel: warning
+  extraOverrides: |
+    <clickhouse>
+      <!-- Disable trace_log (was using 2.6GB) -->
+      <trace_log remove="1"/>
+      <!-- Disable metric_log (was using 1.9GB) -->
+      <metric_log remove="1"/>
+      <!-- Disable asynchronous_metric_log (was using 1.9GB) -->
+      <asynchronous_metric_log remove="1"/>
+      <!-- Keep query_log but with short 7-day retention -->
+      <query_log>
+        <database>system</database>
+        <table>query_log</table>
+        <partition_by>toYYYYMM(event_date)</partition_by>
+        <ttl>event_date + INTERVAL 7 DAY</ttl>
+      </query_log>
+      <!-- Keep text_log but with short 3-day retention -->
+      <text_log>
+        <database>system</database>
+        <table>text_log</table>
+        <ttl>event_date + INTERVAL 3 DAY</ttl>
+      </text_log>
+    </clickhouse>
 
 resources:
   requests:
