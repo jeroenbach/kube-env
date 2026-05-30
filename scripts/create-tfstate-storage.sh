@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-RESOURCE_GROUP="rg-provisioning-mpn"
+RESOURCE_GROUP="rg-provisioning-payg"
 LOCATION="westeurope"
-STORAGE_ACCOUNT="stprovisioningmpn"
+STORAGE_ACCOUNT="stprovisioningpayg"
 CONTAINER_NAME="tfstate"
 
 az group create \

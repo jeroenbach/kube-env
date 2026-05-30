@@ -1,9 +1,9 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "rg-provisioning-mpn"
-    storage_account_name = "stprovisioningmpn"
+    resource_group_name  = "rg-provisioning-payg"
+    storage_account_name = "stprovisioningpayg"
     container_name       = "tfstate"
-    key                  = "aks-1-mpn-westeu-prod"
+    key                  = "aks-1-payg-westeu-prod"
   }
   
   required_providers {

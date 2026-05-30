@@ -23,7 +23,7 @@ module "aks_cluster" {
 variable "azure_cluster_name" {
   description = "The name of the Azure Kubernetes cluster."
   type        = string
-  default     = "aks-1-mpn-westeu-prod"
+  default     = "aks-1-payg-westeu-prod"
 }
 variable "letsencrypt_email" {
   description = "The email address used for Let's Encrypt registration."

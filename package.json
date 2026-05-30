@@ -6,14 +6,15 @@
     "scripts:init": "chmod +x scripts/*",
     "grafana": "./scripts/grafana-open.sh",
     "rancher": "./scripts/rancher-open.sh",
-    "aks-1": "terraform -chdir=aks-1-mpn-westeu-prod",
-    "aks-1:init": "terraform -chdir=aks-1-mpn-westeu-prod init",
-    "aks-1:apply": "./scripts/verify-kube-context.sh aks-1-mpn-westeu-prod && terraform -chdir=aks-1-mpn-westeu-prod apply",
-    "aks-1:connect": "./scripts/verify-kube-context.sh aks-1-mpn-westeu-prod",
+    "aks-1": "terraform -chdir=aks-1-payg-westeu-prod",
+    "aks-1:init": "terraform -chdir=aks-1-payg-westeu-prod init",
+    "aks-1:apply": "./scripts/verify-kube-context.sh aks-1-payg-westeu-prod && terraform -chdir=aks-1-payg-westeu-prod apply",
+    "aks-1:connect": "./scripts/verify-kube-context.sh aks-1-payg-westeu-prod",
     "aks-2": "terraform -chdir=aks-2-vse-westeu-prod",
     "aks-2:init": "terraform -chdir=aks-2-vse-westeu-prod init",
     "aks-2:apply": "./scripts/verify-kube-context.sh aks-2-vse-westeu-prod && terraform -chdir=aks-2-vse-westeu-prod apply",
-    "aks-2:connect": "./scripts/verify-kube-context.sh aks-2-vse-westeu-prod"
+    "aks-2:connect": "./scripts/verify-kube-context.sh aks-2-vse-westeu-prod",
+    "aks-old:connect": "./scripts/verify-kube-context.sh aks-vse-westeu-prod-v2"
   },
   "dependencies": {},
   "author": "Jeroen Bach"
