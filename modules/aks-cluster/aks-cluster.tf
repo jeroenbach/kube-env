@@ -66,6 +66,13 @@ resource "azurerm_kubernetes_cluster_node_pool" "additional_worker_pool" {
   ]
 }
 
+resource "azurerm_role_assignment" "acr_pull" {
+  count                = var.acr_resource_id != "" ? 1 : 0
+  scope                = var.acr_resource_id
+  role_definition_name = "AcrPull"
+  principal_id         = azurerm_kubernetes_cluster.aks_cluster.kubelet_identity[0].object_id
+}
+
 // Whenever we create or make changes to the AKS cluster, we also set the current local context to that cluster.
 // This way we can immediately start deploying to the cluster without having to manually set the context.
 // This is needed for all the local_exec commands

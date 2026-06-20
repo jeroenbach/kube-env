@@ -15,6 +15,7 @@ module "aks_cluster" {
   cluster_vm_max_node_count = var.sonarqube_replica_count > 0 ? 2 : 1 # Lets the cluster autoscale to a 2nd node while SonarQube is turned on
   cluster_vm_max_pods_count = 40              # Give a bit more space
   cluster_worker_node_count = 0
+  acr_resource_id           = var.acr_resource_id
 }
 
 # =============================================================================
@@ -28,6 +29,11 @@ variable "azure_cluster_name" {
 variable "letsencrypt_email" {
   description = "The email address used for Let's Encrypt registration."
   type        = string
+}
+variable "acr_resource_id" {
+  description = "Resource ID of the Azure Container Registry to grant AcrPull access to."
+  type        = string
+  default     = ""
 }
 
 # =============================================================================

@@ -45,6 +45,11 @@ variable "letsencrypt_email" {
   description = "The email address for Let's Encrypt notifications"
   type        = string
 }
+variable "acr_resource_id" {
+  description = "Resource ID of an Azure Container Registry to grant AcrPull access to. Leave empty to skip."
+  type        = string
+  default     = ""
+}
 
 # =============================================================================
 # OUTPUTS
