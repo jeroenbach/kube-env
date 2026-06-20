@@ -2,18 +2,18 @@ module "aks_cluster" {
   source = "../modules/aks-cluster"
 
   # Azure Configuration
-  azure_region          = "westeurope"
+  azure_region              = "westeurope"
 
   # SSL Certificate Configuration
-  letsencrypt_email = var.letsencrypt_email
+  letsencrypt_email         = var.letsencrypt_email
 
   # Cluster Configuration
   cluster_name              = var.azure_cluster_name
-  cluster_vm_size           = "Standard_B2s" # Low memory (4GB) Burst VM (2CPU)
-  cluster_vm_disk_size      = 30             # Max size of it's Ephemeral disk
+  cluster_vm_size           = "Standard_B2s"  # Low memory (4GB) Burst VM (2CPU)
+  cluster_vm_disk_size      = 30              # Max size of it's Ephemeral disk
   cluster_vm_min_node_count = 1
-  cluster_vm_max_node_count = 1
-  cluster_vm_max_pods_count = 40             # Give a bit more space
+  cluster_vm_max_node_count = var.sonarqube_replica_count > 0 ? 2 : 1 # Lets the cluster autoscale to a 2nd node while SonarQube is turned on
+  cluster_vm_max_pods_count = 40              # Give a bit more space
   cluster_worker_node_count = 0
 }
 
